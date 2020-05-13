@@ -1,5 +1,5 @@
 {
-  "name": "Hass.IO example add-on repository",
-  "url": "https://home-assistant.io/",
-  "maintainer": "HomeAssistant <info@home-assistant.io>"
+  "name": "Hass.IO TTLockToMqtt add-on repository",
+  "url": "https://github.com/tonyldo/TTLockToMQTT",
+  "maintainer": "https://github.com/tonyldo"
 }

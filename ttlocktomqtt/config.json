@@ -1,0 +1,9 @@
+{
+  "name": "TTLockToMqtt",
+  "version": "0.1",
+  "slug": "ttlocktomqtt",
+  "description": "Adapter between ttlock cloud api and mqtt server",
+  "startup": "before",
+  "boot": "auto",
+  "image": "hub/{arch}-coffee-maker"
+}
