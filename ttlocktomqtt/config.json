@@ -3,7 +3,30 @@
   "version": "0.1",
   "slug": "ttlocktomqtt",
   "description": "Adapter between ttlock cloud api and mqtt server",
-  "startup": "before",
+  "arch": [
+    "armhf",
+    "armv7",
+    "aarch64",
+    "amd64",
+    "i386"
+  ],
+  "url": "https://github.com/tonyldo/TTLockToMQTT",
+  "startup": "application",
   "boot": "auto",
-  "image": "hub/{arch}-coffee-maker"
+  "options": {
+    "ttlockclientapp": "",
+    "ttlocktoken": "",
+    "mqttbrokerhost": "",
+    "mqttbrokerport": "",
+    "mqttbrokeruser": "",
+    "mqttbrokerpass": ""
+  },
+  "schema": {
+    "ttlockclientapp": "str",
+    "ttlocktoken":"str",
+    "mqttbrokerhost": "str",
+    "mqttbrokerport": "port",
+    "mqttbrokeruser": "str",
+    "mqttbrokerpass": "str"
+  }
 }

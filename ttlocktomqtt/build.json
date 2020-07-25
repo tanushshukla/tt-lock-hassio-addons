@@ -1,0 +1,8 @@
+{
+    "build_from": {
+      "armhf": "armhf-base-python",
+      "aarch64": "aarch64-base-python",
+      "amd64": "amd64-base-python",
+      "i386": "i386-base-python"
+    }
+  }

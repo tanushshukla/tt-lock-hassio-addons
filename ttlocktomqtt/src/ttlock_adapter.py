@@ -4,11 +4,14 @@ import threading
 import concurrent.futures
 import getopt
 import sys
+import syslog
 from ttlockwrapper import TTLock,TTlockAPIError, constants
 
 DELAY_BETWEEN_NEW_THREADS_CREATION = 60
 DELAY_BETWEEN_LOCK_PUBLISH_INFOS = 60
 
+#syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_USER)
+syslog.syslog(syslog.LOG_INFO,'TTlockTOMQTT processing initiated...')
 
 class TTLockToMqttClient(mqtt.Client):
     def __init__(self, id, ttlock, broker, port, broker_user, broker_pass,keepalive):
@@ -28,7 +31,7 @@ class TTLockToMqttClient(mqtt.Client):
                 self.username_pw_set(broker_user, password=broker_pass)
 
     def sendMensage(self, topic, msg):
-        print('Client {} sending mensage "{}" to topic "{}"'.format(
+        syslog.syslog(syslog.LOG_INFO,'Client {} sending mensage "{}" to topic "{}"'.format(
             self.mqttClientId, msg, topic))
         self.publish(topic, msg)
         
@@ -38,26 +41,26 @@ class TTLockToMqttClient(mqtt.Client):
     @classmethod
     def cb_on_message(cls, client, userdata, message):
         time.sleep(1)
-        print("Client {} message received: {}".format(
+        syslog.syslog(syslog.LOG_INFO,"Client {} message received: {}".format(
             client.mqttClientId, str(message.payload.decode("utf-8"))))
         client.handleMessage(message)
 
     @classmethod
     def cb_on_disconnect(cls, client, userdata, rc):
         client.connected_flag = False  # set flag
-        print("Client {} disconnected!".format(client.mqttClientId))
+        syslog.syslog(syslog.LOG_INFO,"Client {} disconnected!".format(client.mqttClientId))
 
     @classmethod
     def cb_on_connect(cls, client, userdata, flags, rc):
         if rc == 0:
             client.connected_flag = True  # set flag
-            print("Client {} connected OK!".format(client.mqttClientId))
+            syslog.syslog(syslog.LOG_INFO,"Client {} connected OK!".format(client.mqttClientId))
             if client.COMMAND_TOPIC:
-                print("Client {} subscribe on command topic: {}".format(client.mqttClientId,client.COMMAND_TOPIC))
+                syslog.syslog(syslog.LOG_INFO,"Client {} subscribe on command topic: {}".format(client.mqttClientId,client.COMMAND_TOPIC))
                 client.subscribe(client.COMMAND_TOPIC)
             client.sendDiscoveryMsgs()
         else:
-            print("Client {} Bad connection Returned code= {}".format(
+            syslog.syslog(syslog.LOG_ERR,"Client {} Bad connection Returned code= {}".format(
                 client.mqttClientId, rc))
 
 
@@ -66,11 +69,11 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
     def __init__(self, lock, gateway, ttlock, broker, port, broker_user, broker_pass,keepalive):
         self.lock = lock
         self.gateway = gateway
-        self.DISCOVERY_LOCK_TOPIC = 'test/lock/ttlock/{}_lock/config'.format(
+        self.DISCOVERY_LOCK_TOPIC = 'homeassistant/lock/ttlock/{}_lock/config'.format(
             self.getLockId())
-        self.DISCOVERY_SENSOR_TOPIC = 'test/sensor/ttlock/{}_battery/config'.format(
+        self.DISCOVERY_SENSOR_TOPIC = 'homeassistant/sensor/ttlock/{}_battery/config'.format(
             self.getLockId())
-        self.DISCOVERY_BINARY_SENSOR_TOPIC = 'test/binary_sensor/ttlock/{}_state/config'.format(
+        self.DISCOVERY_BINARY_SENSOR_TOPIC = 'homeassistant/binary_sensor/ttlock/{}_state/config'.format(
             self.getLockId())
         self.BATTERY_LEVEL_SENSOR_TOPIC = 'ttlocktomqtt/{}/battery'.format(
             self.getLockId())
@@ -105,7 +108,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         elif command == 'unlock':
             result = self.ttlock.unlock(self.getLockId())
         else:
-            print('Invalid command.')
+            syslog.syslog(syslog.LOG_INFO,'Invalid command.')
             return
         if not result:
             # todo: send unavailble msg
@@ -113,17 +116,17 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         self.publishInfos()
 
     def publishInfos(self):
-        #print("Time elapsed since last info send for {} lock: {}".format(self.getLockId(), time.time()-self.lastPublishInfo))
+        #syslog.syslog(syslog.LOG_INFO,"Time elapsed since last info send for {} lock: {}".format(self.getLockId(), time.time()-self.lastPublishInfo))
         if time.time()-self.lastPublishInfo > DELAY_BETWEEN_LOCK_PUBLISH_INFOS*3:
             self.forcePublishInfos()
 
     def forcePublishInfos(self):
         try:
-            print('Publish mqtt lock {} information.'.format(self.getLockId()))
+            syslog.syslog(syslog.LOG_INFO,'Publish mqtt lock {} information.'.format(self.getLockId()))
             self.sendLockState()
             self.sendLockBatteryLevel()
         except Exception as error:
-            print('While publish mqtt lock {} information: {}'.format(self.getLockId(),error))
+            syslog.syslog(syslog.LOG_ERR,'While publish mqtt lock {} information: {}'.format(self.getLockId(),error))
         self.lastPublishInfo = time.time()
 
 
@@ -136,14 +139,14 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         # Open state of lock:0-locked,1-unlocked,2-unknown
         state = self.ttlock.lock_state(self.getLockId())
         if state == 2:
-            print('While send {} lock state TTlockAPI return "unknown".'.format(self.getLockId()))
+            syslog.syslog(syslog.LOG_WARNING,'While send {} lock state TTlockAPI return "unknown".'.format(self.getLockId()))
             return
         lock_is = 'unlocked' if state else 'locked'
         msg = self.STATE_PAYLOAD.format(lock_is)
         self.sendMensage(self.STATE_SENSOR_TOPIC, msg)
 
     def sendDiscoveryMsgs(self):
-        print('Sending discoveries msgs for client {}.'.format(self.mqttClientId))
+        syslog.syslog(syslog.LOG_INFO,'Sending discoveries msgs for client {}.'.format(self.mqttClientId))
         msg = self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD.format(self.getName(
         ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac(), self.getGatewayId())
         self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg)
@@ -156,7 +159,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
     
 def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=1.0, run_forever=False):
     ttlockToMqttClient = TTLockToMqttClientLock(lock, gateway, ttlock, broker, port, broker_user, broker_pass,keepalive)
-    print("Created TTlock Mqtt Client for lockid: {}".format(
+    syslog.syslog(syslog.LOG_INFO,"Created TTlock Mqtt Client for lockid: {}".format(
         ttlockToMqttClient.mqttClientId))
     bad_connection = 0
     ttlockToMqttClient.mqttConnection()
@@ -181,12 +184,12 @@ def createClients(broker, port, broker_user, broker_pass, ttlock_client, ttlock_
     for gateway in ttlock.get_gateway_generator():
         for lock in ttlock.get_locks_per_gateway_generator(gateway.get(constants.GATEWAY_ID_FIELD)):
             if lock.get(constants.LOCK_ID_FIELD) in client_futures.keys() and not client_futures.get(lock.get(constants.LOCK_ID_FIELD)).done():
-                print('Lock {} mqtt client already created...'.format(lock.get(constants.LOCK_ID_FIELD)))
+                syslog.syslog(syslog.LOG_INFO,'Lock {} mqtt client already created...'.format(lock.get(constants.LOCK_ID_FIELD)))
                 
             else:
                 client_futures[lock.get(constants.LOCK_ID_FIELD)] = executor.submit(client_loop, lock, gateway, ttlock, broker, port, broker_user, broker_pass, DELAY_BETWEEN_NEW_THREADS_CREATION)
-            time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION*2)
-            
+            time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
+        time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)          
 
 
 def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
@@ -194,24 +197,24 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
         if not ttlock_client or not ttlock_token:
             raise ValueError('Invalid ttlock client or token.')
         
-        print("Starting main loop...")
+        syslog.syslog(syslog.LOG_DEBUG,"Starting main loop...")
         while True:
             try:
                 createClients(broker, port, broker_user, broker_pass,
                 ttlock_client, ttlock_token)
-                print("Current threads: {}".format(threading.active_count()))
+                syslog.syslog(syslog.LOG_INFO,"Current threads: {}".format(threading.active_count()))
             except Exception as exception:
-                print(exception)
+                syslog.syslog(syslog.LOG_ERR,exception)
             time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
 
     except KeyboardInterrupt :
-        print("Ending...")
+        syslog.syslog(syslog.LOG_INFO,"Ending...")
         global run_flag
         run_flag = False
         for lockId, future in client_futures.items():
-            print("{} thread is over!".format(future.result().getLockId()))
+            syslog.syslog(syslog.LOG_INFO,"{} thread is over!".format(future.result().getLockId()))
     except ValueError as error:
-        print(error)
+        syslog.syslog(syslog.LOG_ERR,error)
 
 
 run_flag = True
@@ -232,7 +235,7 @@ if __name__ == '__main__':
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
-        print (str(err))
+        syslog.syslog(syslog.LOG_ERR,str(err))
         sys.exit(2)
 
     for current_argument, current_value in arguments:
