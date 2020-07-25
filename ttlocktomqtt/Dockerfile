@@ -22,7 +22,7 @@ LABEL \
     org.label-schema.name="TTLockToMqtt" \
     org.label-schema.schema-version="0.1" \
     org.label-schema.url="https://github.com/tonyldo/TTLockToMQTT" \
-    org.label-schema.usage="https://github.com/tonyldo/TTLockToMQTT/tree/master/README.md" \
+    org.label-schema.usage="https://github.com/tonyldo/TTLockToMQTT/blob/master/ttlocktomqtt/README.md" \
     org.label-schema.vcs-ref=${BUILD_REF} \
     org.label-schema.vcs-url="https://github.com/tonyldo/TTLockToMQTT" \
     org.label-schema.vendor="TTLockToMQTT Hass.io Add-on"
@@ -31,7 +31,7 @@ LABEL \
 COPY requirements.txt /tmp/
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY ttlocktomqtt/src/ttlock_adapter.py /
+COPY src/ttlock_adapter.py /
 
 COPY run.sh /
 RUN chmod a+x /run.sh
