@@ -24,9 +24,9 @@
   "schema": {
     "ttlockclientapp": "str",
     "ttlocktoken":"str",
-    "mqttbrokerhost": "str",
-    "mqttbrokerport": "port",
-    "mqttbrokeruser": "str",
-    "mqttbrokerpass": "str"
+    "mqttbrokerhost": "str?",
+    "mqttbrokerport": "port?",
+    "mqttbrokeruser": "str?",
+    "mqttbrokerpass": "str?"
   }
 }
