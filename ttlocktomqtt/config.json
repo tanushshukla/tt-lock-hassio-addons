@@ -14,12 +14,12 @@
   "startup": "application",
   "boot": "auto",
   "options": {
-    "ttlockclientapp": "",
-    "ttlocktoken": "",
-    "mqttbrokerhost": "",
-    "mqttbrokerport": "",
-    "mqttbrokeruser": "",
-    "mqttbrokerpass": ""
+    "ttlockclientapp": "TTLOCK CLOUD API CLIENT",
+    "ttlocktoken": "TTLOCK TOKEN",
+    "mqttbrokerhost": "localhost",
+    "mqttbrokerport": "1883",
+    "mqttbrokeruser": "mqtt user",
+    "mqttbrokerpass": "mqtt pass"
   },
   "schema": {
     "ttlockclientapp": "str",
