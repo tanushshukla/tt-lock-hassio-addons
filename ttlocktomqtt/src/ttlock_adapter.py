@@ -158,13 +158,15 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         ), self.getLockId(), self.getMac(), self.getGatewayId())
         self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg)
     
-def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=1.0, run_forever=False):
+def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=2.0, run_forever=False):
     ttlockToMqttClient = TTLockToMqttClientLock(lock, gateway, ttlock, broker, port, broker_user, broker_pass,keepalive)
     logging.info("Created TTlock Mqtt Client for lockid: {}".format(
         ttlockToMqttClient.mqttClientId))
     bad_connection = 0
     ttlockToMqttClient.mqttConnection()
     while run_flag:  # loop
+        logging.info("Start Mqtt Client loop for lockid: {}".format(
+        ttlockToMqttClient.mqttClientId))
         ttlockToMqttClient.loop(loop_delay)
         if ttlockToMqttClient.connected_flag:
             ttlockToMqttClient.publishInfos()
