@@ -1,8 +1,8 @@
 {
     "build_from": {
-      "armhf": "hassioaddons/armhf-base-python",
-      "aarch64": "hassioaddons/aarch64-base-python",
-      "amd64": "hassioaddons/amd64-base-python",
-      "i386": "hassioaddons/i386-base-python"
+      "armhf": "homeassistant//armhf-base-python",
+      "aarch64": "homeassistant//aarch64-base-python",
+      "amd64": "homeassistant//amd64-base-python",
+      "i386": "homeassistant/i386-base-python"
     }
 }
