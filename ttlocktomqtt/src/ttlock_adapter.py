@@ -166,7 +166,6 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
             ttlockToMqttClient.mqttClientId))
         bad_connection = 0
         ttlockToMqttClient.mqttConnection()
-        logging.info("Run Flag: {}".format(run_flag))
         while run_flag:  # loop
             ttlockToMqttClient.loop(loop_delay)
             if ttlockToMqttClient.connected_flag:
@@ -182,7 +181,7 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
             ttlockToMqttClient.disconnect()
     
     except BaseException as exception:
-        logging.info("Client Loop Thread Error -> {}".formart(str(exception)))
+        logging.error("Client Loop Thread Error -> {}".format(str(exception)))
     
     finally:
         logging.info("Return future for lockid: {}".format(ttlockToMqttClient.mqttClientId))
