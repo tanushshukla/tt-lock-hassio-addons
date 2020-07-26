@@ -13,6 +13,7 @@
   "url": "https://github.com/tonyldo/TTLockToMQTT",
   "startup": "application",
   "boot": "auto",
+  "host_network": true,
   "options": {
     "ttlockclientapp": "TTLOCK CLOUD API CLIENT",
     "ttlocktoken": "TTLOCK TOKEN",
