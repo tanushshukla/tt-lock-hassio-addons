@@ -251,5 +251,5 @@ if __name__ == '__main__':
             ttlock_client = current_value
         elif current_argument in ("-t", "--token"):
             ttlock_token = current_value
-
+    syslog.syslog(syslog.LOG_INFO,"Options: {}, {}, {}, {}, {}, {}".format(ttlock_client,ttlock_token,broker,port,broker_user,broker_pass))
     main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token)
