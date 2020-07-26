@@ -11,9 +11,8 @@
     "i386"
   ],
   "url": "https://github.com/tonyldo/TTLockToMQTT",
-  "startup": "application",
+  "startup": "service",
   "boot": "auto",
-  "host_network": true,
   "options": {
     "ttlockclientapp": "TTLOCK CLOUD API CLIENT",
     "ttlocktoken": "TTLOCK TOKEN",

@@ -159,29 +159,34 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg)
     
 def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=2.0, run_forever=False):
-    ttlockToMqttClient = TTLockToMqttClientLock(lock, gateway, ttlock, broker, port, broker_user, broker_pass,keepalive)
-    logging.info("Created TTlock Mqtt Client for lockid: {}".format(
-        ttlockToMqttClient.mqttClientId))
-    bad_connection = 0
-    ttlockToMqttClient.mqttConnection()
-    while run_flag:  # loop
+    ttlockToMqttClient = None
+    try:
+        ttlockToMqttClient = TTLockToMqttClientLock(lock, gateway, ttlock, broker, port, broker_user, broker_pass,keepalive)
+        logging.info("Created TTlock Mqtt Client for lockid: {}".format(
+            ttlockToMqttClient.mqttClientId))
+        bad_connection = 0
+        ttlockToMqttClient.mqttConnection()
+  
+        while run_flag:  # loop
+            ttlockToMqttClient.loop(loop_delay)
+            if ttlockToMqttClient.connected_flag:
+                ttlockToMqttClient.publishInfos()
+            else:
+                if bad_connection > 5 and not run_forever:
+                    logging.error("5 times bad connection for: {}".format(lock.get(constants.LOCK_ID_FIELD)))
+                    break
+                bad_connection += 1
+                time.sleep(10)
 
-        ttlockToMqttClient.loop(loop_delay)
         if ttlockToMqttClient.connected_flag:
-            ttlockToMqttClient.publishInfos()
-        else:
-            if bad_connection > 5 and not run_forever:
-                logging.error("5 times bad connection for: {}".format(lock.get(constants.LOCK_ID_FIELD)))
-                break
-            bad_connection += 1
-            time.sleep(10)
-
-    if ttlockToMqttClient.connected_flag:
-        ttlockToMqttClient.disconnect()
+            ttlockToMqttClient.disconnect()
     
-    logging.info("Return future for lockid: {}".format(
-        ttlockToMqttClient.mqttClientId))
-    return ttlockToMqttClient
+    except Exception as exception:
+        logging.error("Client Loop Thread Error -> {}".formart(str(exception)))
+    
+    finally:
+        logging.info("Return future for lockid: {}".format(ttlockToMqttClient.mqttClientId))
+        return ttlockToMqttClient
 
 
 def createClients(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
