@@ -180,8 +180,8 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
         if ttlockToMqttClient.connected_flag:
             ttlockToMqttClient.disconnect()
     
-    except BaseException as exception:
-        logging.error("Client Loop Thread Error -> {}".format(str(exception)))
+    except Exception as e:
+        logging.exception("Client Loop Thread Error {}".format(ttlockToMqttClient.mqttClientId))
     
     finally:
         logging.info("Return future for lockid: {}".format(ttlockToMqttClient.mqttClientId))
@@ -212,8 +212,8 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
                 createClients(broker, port, broker_user, broker_pass,
                 ttlock_client, ttlock_token)
                 logging.info("Current threads: {}".format(threading.active_count()))
-            except Exception as exception:
-                logging.error(str(exception))
+            except Exception as e:
+                logging.exception("Error main method")
             time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
 
     except KeyboardInterrupt :
@@ -222,8 +222,8 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
         run_flag = False
         for lockId, future in client_futures.items():
             logging.info("{} thread is over!".format(future.result().getLockId()))
-    except ValueError as error:
-        logging.error(str(error))
+    except ValueError as e:
+        logging.exception('Exiting script...')
 
 
 run_flag = True
@@ -243,8 +243,8 @@ if __name__ == '__main__':
     long_options = ['broker=', 'port=', 'user=', 'Pass=', 'client=', 'token=']
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
-    except getopt.error as err:
-        logging.error(str(err))
+    except getopt.error as e:
+        logging.exception("Error with script options...")
         sys.exit(2)
 
     for current_argument, current_value in arguments:
