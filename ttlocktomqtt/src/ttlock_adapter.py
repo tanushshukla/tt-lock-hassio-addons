@@ -169,6 +169,7 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
             ttlockToMqttClient.publishInfos()
         else:
             if bad_connection > 5 and not run_forever:
+                logging.error("5 times bad connection for: {}".format(lock.get(constants.LOCK_ID_FIELD)))
                 break
             bad_connection += 1
             time.sleep(10)
