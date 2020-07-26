@@ -36,6 +36,7 @@ class TTLockToMqttClient(mqtt.Client):
         self.publish(topic, msg)
         
     def mqttConnection(self):
+        logging.info("Try connection for TTlock Mqtt Client {} at {}:{}".format(self.mqttClientId, self.broker_host, self.broker_port))
         self.connect(self.broker_host, self.broker_port, self.keepalive_mqtt)
 
     @classmethod
