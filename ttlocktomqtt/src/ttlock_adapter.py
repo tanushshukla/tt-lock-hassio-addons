@@ -164,9 +164,9 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
         ttlockToMqttClient.mqttClientId))
     bad_connection = 0
     ttlockToMqttClient.mqttConnection()
+    global run_flag
     while run_flag:  # loop
-        logging.info("Start Mqtt Client loop for lockid: {}".format(
-        ttlockToMqttClient.mqttClientId))
+
         ttlockToMqttClient.loop(loop_delay)
         if ttlockToMqttClient.connected_flag:
             ttlockToMqttClient.publishInfos()
@@ -179,7 +179,9 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
 
     if ttlockToMqttClient.connected_flag:
         ttlockToMqttClient.disconnect()
-
+    
+    logging.info("Return future for lockid: {}".format(
+        ttlockToMqttClient.mqttClientId))
     return ttlockToMqttClient
 
 
