@@ -1,2 +1,2 @@
-ttlockio == 0.1.3
+ttlockio == 0.1.4
 paho-mqtt == 1.5.0
