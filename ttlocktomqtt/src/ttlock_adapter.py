@@ -36,7 +36,7 @@ class TTLockToMqttClient(mqtt.Client):
         self.publish(topic, msg)
         
     def mqttConnection(self):
-        logging.info("Try connection for TTlock Mqtt Client {} at {}:{}".format(self.mqttClientId, self.broker_host, self.broker_port))
+        logging.debug("Try connection for TTlock Mqtt Client {} at {}:{}".format(self.mqttClientId, self.broker_host, self.broker_port))
         self.connect(self.broker_host, self.broker_port, self.keepalive_mqtt)
 
     @classmethod
@@ -184,7 +184,7 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
         logging.exception("Client Loop Thread Error {}".format(ttlockToMqttClient.mqttClientId))
     
     finally:
-        logging.info("Return future for lockid: {}".format(ttlockToMqttClient.mqttClientId))
+        logging.debug("Return future for lockid: {}".format(ttlockToMqttClient.mqttClientId))
         return ttlockToMqttClient
 
 

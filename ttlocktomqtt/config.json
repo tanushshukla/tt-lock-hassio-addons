@@ -16,10 +16,10 @@
   "options": {
     "ttlockclientapp": "TTLOCK CLOUD API CLIENT",
     "ttlocktoken": "TTLOCK TOKEN",
-    "mqttbrokerhost": "localhost",
-    "mqttbrokerport": "1883",
-    "mqttbrokeruser": "mqtt user",
-    "mqttbrokerpass": "mqtt pass"
+    "mqttbrokerhost": null,
+    "mqttbrokerport": null,
+    "mqttbrokeruser": null,
+    "mqttbrokerpass": null
   },
   "schema": {
     "ttlockclientapp": "str",
