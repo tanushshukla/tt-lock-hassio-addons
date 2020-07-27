@@ -28,8 +28,8 @@ class TTLockToMqttClient(mqtt.Client):
                 self.username_pw_set(broker_user, password=broker_pass)
 
     def sendMensage(self, topic, msg, retain=False):
-        logging.debug('Client {} sending mensage "{}" to topic "{}"'.format(
-            self.mqttClientId, msg, topic))
+        logging.debug('Client {} sending mensage "{}" to topic "{}" and retained {}'.format(
+            self.mqttClientId, msg, topic, retain))
         self.publish(topic, msg, retain)
         
     def mqttConnection(self):
