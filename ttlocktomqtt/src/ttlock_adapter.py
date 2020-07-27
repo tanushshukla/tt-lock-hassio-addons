@@ -78,9 +78,9 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         self.COMMAND_TOPIC = 'ttlocktomqtt/{}/command'.format(self.getLockId())
         self.STATE_SENSOR_TOPIC = 'ttlocktomqtt/{}/state'.format(
             self.getLockId())
-        self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{} state", "state_topic": "{}", "value_template": "{{ value_json.lock}}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
-        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{ value_json.command}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
-        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{ value_json.battery}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{} state", "state_topic": "{}", "value_template": "{{ value_json.lock }}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{ value_json.command }}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{ value_json.battery }}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.STATE_PAYLOAD = '{{"lock": "{}"}}'
         self.BATTERY_LEVEL_PAYLOAD = '{{"battery": {}}}'
 
@@ -101,9 +101,9 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
     def handleMessage(self, message):
         result = False
         command = str(message.payload.decode("utf-8"))
-        if command == 'lock':
+        if command == 'LOCK':
             result = self.ttlock.lock(self.getLockId())
-        elif command == 'unlock':
+        elif command == 'UNLOCK':
             result = self.ttlock.unlock(self.getLockId())
         else:
             logging.info('Invalid command.')
