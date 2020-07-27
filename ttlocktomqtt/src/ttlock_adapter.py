@@ -140,7 +140,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         if state == 2:
             logging.warning('While send {} lock state TTlockAPI return "unknown".'.format(self.getLockId()))
             return
-        lock_is = 'unlocked' if state else 'locked'
+        lock_is = 'UNLOCKED' if state else 'LOCKED'
         msg = self.STATE_PAYLOAD.format(lock_is)
         self.sendMensage(self.STATE_SENSOR_TOPIC, msg)
 
