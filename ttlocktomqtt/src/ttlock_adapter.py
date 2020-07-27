@@ -78,9 +78,9 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         self.COMMAND_TOPIC = 'ttlocktomqtt/{}/command'.format(self.getLockId())
         self.STATE_SENSOR_TOPIC = 'ttlocktomqtt/{}/state'.format(
             self.getLockId())
-        self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{}", "state_topic": "{}", "value_template": "{{ value_json.lock}}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}}, "via_device":"{}" }}'
-        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{}", "command_topic": "{}", "state_topic": "{}", "value_template": "{{ value_json.command}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}}, "via_device":"{}" }}'
-        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{}", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{ value_json.battery}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}}, "via_device":"{}" }}'
+        self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{} state", "state_topic": "{}", "value_template": "{{ value_json.lock}}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{ value_json.command}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{ value_json.battery}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.STATE_PAYLOAD = '{{"lock": "{}"}}'
         self.BATTERY_LEVEL_PAYLOAD = '{{"battery": {}}}'
 
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     numeric_level = getattr(logging, loglevel.upper(), None)
     if not isinstance(numeric_level, int):
        raise ValueError('Invalid log level: %s' % loglevel)
-    
+
     logging.basicConfig(level=numeric_level, datefmt='%Y-%m-%d %H:%M:%S',
                     format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s', )
 
