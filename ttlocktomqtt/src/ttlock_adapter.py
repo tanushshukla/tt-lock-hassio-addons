@@ -248,13 +248,13 @@ if __name__ == '__main__':
         sys.exit(2)
 
     for current_argument, current_value in arguments:
-        if current_argument in ("-b", "--broker"):
+        if current_argument in ("-b", "--broker") and current_value!='null':
             broker = current_value
-        elif current_argument in ("-p", "--port"):
+        elif current_argument in ("-p", "--port") and current_value!='null':
             port = current_value
-        elif current_argument in ("-u", "--user"):
+        elif current_argument in ("-u", "--user") and current_value!='null':
             broker_user = current_value
-        elif current_argument in ("-P", "--Pass"):
+        elif current_argument in ("-P", "--Pass") and current_value!='null':
             broker_pass = current_value
         elif current_argument in ("-c", "--client"):
             ttlock_client = current_value
