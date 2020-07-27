@@ -226,6 +226,10 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
         logging.exception('Exiting script...')
 
 
+def isEmptyStr(s):
+    return s=='null' or len(s)==0 or s.isspace()
+
+
 run_flag = True
 client_futures = dict()
 executor = concurrent.futures.ThreadPoolExecutor()
@@ -248,13 +252,15 @@ if __name__ == '__main__':
         sys.exit(2)
 
     for current_argument, current_value in arguments:
-        if current_argument in ("-b", "--broker") and current_value!='null':
+        if isEmptyStr(current_value):
+            break
+        elif current_argument in ("-b", "--broker"):
             broker = current_value
-        elif current_argument in ("-p", "--port") and current_value!='null':
+        elif current_argument in ("-p", "--port"):
             port = current_value
-        elif current_argument in ("-u", "--user") and current_value!='null':
+        elif current_argument in ("-u", "--user"):
             broker_user = current_value
-        elif current_argument in ("-P", "--Pass") and current_value!='null':
+        elif current_argument in ("-P", "--Pass"):
             broker_pass = current_value
         elif current_argument in ("-c", "--client"):
             ttlock_client = current_value
