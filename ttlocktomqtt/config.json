@@ -23,6 +23,7 @@
     "mqttbrokerhost": "str?",
     "mqttbrokerport": "port?",
     "mqttbrokeruser": "str?",
-    "mqttbrokerpass": "str?"
+    "mqttbrokerpass": "str?",
+    "log_level": "list(debug|info|warning|error)?"
   }
 }

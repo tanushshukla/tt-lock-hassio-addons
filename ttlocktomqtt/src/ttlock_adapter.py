@@ -10,9 +10,6 @@ from ttlockwrapper import TTLock,TTlockAPIError, constants
 DELAY_BETWEEN_NEW_THREADS_CREATION = 60
 DELAY_BETWEEN_LOCK_PUBLISH_INFOS = 60
 
-logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
-                    format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s', )
-
 class TTLockToMqttClient(mqtt.Client):
     def __init__(self, id, ttlock, broker, port, broker_user, broker_pass,keepalive):
         mqttClientId = "lOCK-{}-{}".format(str(id), str(int(time.time())))
@@ -30,10 +27,10 @@ class TTLockToMqttClient(mqtt.Client):
         if broker_user and broker_pass:
                 self.username_pw_set(broker_user, password=broker_pass)
 
-    def sendMensage(self, topic, msg):
+    def sendMensage(self, topic, msg, retain=False):
         logging.debug('Client {} sending mensage "{}" to topic "{}"'.format(
             self.mqttClientId, msg, topic))
-        self.publish(topic, msg)
+        self.publish(topic, msg, retain)
         
     def mqttConnection(self):
         logging.debug("Try connection for TTlock Mqtt Client {} at {}:{}".format(self.mqttClientId, self.broker_host, self.broker_port))
@@ -150,13 +147,13 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         logging.info('Sending discoveries msgs for client {}.'.format(self.mqttClientId))
         msg = self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD.format(self.getName(
         ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac(), self.getGatewayId())
-        self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg)
+        self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg, True)
         msg = self.DISCOVERY_STATE_SENSOR_PAYLOAD.format(self.getName(
         ), self.STATE_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac(), self.getGatewayId())
-        self.sendMensage(self.DISCOVERY_BINARY_SENSOR_TOPIC, msg)
+        self.sendMensage(self.DISCOVERY_BINARY_SENSOR_TOPIC, msg, True)
         msg = self.DISCOVERY_LOCK_PAYLOAD.format(self.getName(), self.COMMAND_TOPIC, self.STATE_SENSOR_TOPIC, self.getLockId(
         ), self.getLockId(), self.getMac(), self.getGatewayId())
-        self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg)
+        self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg, True)
     
 def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=2.0, run_forever=False):
     ttlockToMqttClient = None
@@ -241,15 +238,15 @@ if __name__ == '__main__':
     broker_pass = None
     ttlock_client = None
     ttlock_token = None
+    loglevel = 'INFO'
     full_cmd_arguments = sys.argv
     argument_list = full_cmd_arguments[1:]
-    short_options = 'b:p:u:P:c:t:'
-    long_options = ['broker=', 'port=', 'user=', 'Pass=', 'client=', 'token=']
+    short_options = 'b:p:u:P:c:t:l:'
+    long_options = ['broker=', 'port=', 'user=', 'Pass=', 'client=', 'token=', 'log_level=']
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as e:
-        logging.exception("Error with script options...")
-        sys.exit(2)
+        raise ValueError('Invalid parameters!')
 
     for current_argument, current_value in arguments:
         if isEmptyStr(current_value):
@@ -266,5 +263,16 @@ if __name__ == '__main__':
             ttlock_client = current_value
         elif current_argument in ("-t", "--token"):
             ttlock_token = current_value
-    logging.info("Options: {}, {}, {}, {}, {}, {}".format(ttlock_client,ttlock_token,broker,port,broker_user,broker_pass))
+        elif current_argument in ("-l", "--log_level"):
+            ttlock_token = current_value
+    
+
+    numeric_level = getattr(logging, loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+       raise ValueError('Invalid log level: %s' % loglevel)
+    
+    logging.basicConfig(level=numeric_level, datefmt='%Y-%m-%d %H:%M:%S',
+                    format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s', )
+
+    logging.debug("Options: {}, {}, {}, {}, {}, {}".format(ttlock_client,ttlock_token,broker,port,broker_user,broker_pass))
     main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token)
