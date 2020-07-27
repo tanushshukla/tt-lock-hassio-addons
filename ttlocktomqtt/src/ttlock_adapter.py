@@ -79,7 +79,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
         self.STATE_SENSOR_TOPIC = 'ttlocktomqtt/{}/state'.format(
             self.getLockId())
         self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{} state", "state_topic": "{}", "value_template": "{{ value_json.lock }}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
-        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{ value_json.command }}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{ value_json.battery }}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.STATE_PAYLOAD = '{{"lock": "{}"}}'
         self.BATTERY_LEVEL_PAYLOAD = '{{"battery": {}}}'
@@ -109,6 +109,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
             logging.info('Invalid command.')
             return
         if not result:
+            logging.warning('Fail send to TTLOCK API command to lock {}.'.format(self.getLockId()))
             # todo: send unavailble msg
             return
         self.publishInfos()
