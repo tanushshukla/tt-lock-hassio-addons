@@ -13,7 +13,7 @@ DELAY_BETWEEN_LOCK_PUBLISH_INFOS = 60
 class TTLockToMqttClient(mqtt.Client):
     def __init__(self, id, ttlock, broker, port, broker_user, broker_pass,keepalive):
         mqttClientId = "lOCK-{}-{}".format(str(id), str(int(time.time())))
-        super().__init__(mqttClientId)
+        super().__init__(mqttClientId,False)
         self.ttlock = ttlock
         self.mqttClientId = mqttClientId
         self.connected_flag = False
