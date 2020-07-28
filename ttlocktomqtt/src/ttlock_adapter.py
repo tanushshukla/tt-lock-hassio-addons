@@ -31,7 +31,7 @@ class TTLockToMqttClient(mqtt.Client):
         self.publish(topic, msg, 0, retain)
 
     def mqttConnection(self):
-        logging.debug("Try connection for TTlock Mqtt Client {} at {}:{}".format(
+        logging.debug("Client {} try connection at {}:{}".format(
             self.mqttClientId, self.broker_host, self.broker_port))
         self.connect(self.broker_host, self.broker_port, self.keepalive_mqtt)
 
@@ -42,7 +42,7 @@ class TTLockToMqttClient(mqtt.Client):
             logging.debug("Client {} message received: {}".format(client.mqttClientId, str(message.payload.decode("utf-8"))))
             client.handleMessage(message)
         except Exception:
-            logging.exception('While on received mqtt message for lock {}:'.format(client.getLockId()))
+            logging.exception('Client {} error on received mqtt message'.format(client.getLockId()))
 
     @classmethod
     def cb_on_disconnect(cls, client, userdata, rc):
@@ -65,7 +65,7 @@ class TTLockToMqttClient(mqtt.Client):
                 logging.error("Client {} Bad connection Returned code= {}".format(
                     client.mqttClientId, rc))
         except Exception:
-            logging.exception('While on connect mqtt for lock {}:'.format(client.getLockId()))
+            logging.exception('Client {} error on connect'.format(client.getLockId()))
 
 
 class TTLockToMqttClientLock(TTLockToMqttClient):
@@ -197,7 +197,7 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
             ttlockToMqttClient.mqttClientId))
 
     finally:
-        logging.debug("Return Client {} future".format(
+        logging.debug("Client {} return future".format(
             ttlockToMqttClient.mqttClientId))
         return ttlockToMqttClient
 
