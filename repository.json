@@ -1,5 +1,5 @@
 {
-  "name": "Hass.IO add-on repository",
+  "name": "My HassIO Addons Repository",
   "url": "https://github.com/tonyldo/TTLockToMQTT",
-  "maintainer": "https://github.com/tonyldo"
+  "maintainer": "tonyldo@gmail.com"
 }

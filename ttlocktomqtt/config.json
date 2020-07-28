@@ -24,6 +24,6 @@
     "mqttbrokerport": "port?",
     "mqttbrokeruser": "str?",
     "mqttbrokerpass": "str?",
-    "log_level": "list(debug|info|warning|error)?"
+    "loglevel": "list(debug|info|warning|error)?"
   }
 }
