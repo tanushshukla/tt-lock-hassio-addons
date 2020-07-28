@@ -4,8 +4,8 @@ Integrating yours ttlocks devices on your home assistan instance over MQTT.
 
 ## Installation
 
-1. Follow the instructions on README of this repo to add it on yours Addon Store.
-1. Search for the "TTLock" add-on in the Supervisor Addon store.
+1. Follow the instructions on README of this repo to add it in Supervisor Add-on Store.
+1. Search for the "TTLock" add-on at the Supervisor Add-on store.
 1. Install the "TTLock" add-on.
 1. Configure the "TTLock" add-on.
 1. Start the "TTLock" add-on.
