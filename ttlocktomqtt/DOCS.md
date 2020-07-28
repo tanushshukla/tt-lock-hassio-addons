@@ -1,14 +1,14 @@
 # TTLockToMQTT Add-on
 
-Integrating your TTLocks devices with Home Assistant over MQTT.
+Integrating your TTLock devices with Home Assistant over MQTT
 
 ## Installation
 
-1. Follow the instructions on README of this repo to add it in Supervisor Add-on Store.
-1. Search for the "TTLock" add-on at the Supervisor Add-on store.
-1. Install the "TTLock" add-on.
-1. Configure the "TTLock" add-on.
-1. Start the "TTLock" add-on.
+1. Follow the instructions on [README](./README.md) of this repo to add it in Supervisor Add-on Store.
+1. Search for the "TTLock2MQTT" add-on at the Supervisor Add-on store.
+1. Install the "TTLock2MQTT" add-on.
+1. Configure the "TTLock2MQTT" add-on.
+1. Start the "TTLock2MQTT" add-on.
 
 ## Configuration
 
@@ -27,12 +27,12 @@ loglevel: info
 ```
 ### Options: `ttlockclientapp` and `ttlocktoken`
 
-Follow this intructions to get yours YOUR_TTLOCK_CLOUD_API_CLIENT_APP and YOUR_TTLOCK_CLOUD_API_TOKEN
+Follow this intructions to get your `YOUR_TTLOCK_CLOUD_API_CLIENT_APP` and `YOUR_TTLOCK_CLOUD_API_TOKEN`
 https://github.com/tonyldo/ttlockio
 
 ### Options: `mqttbrokerhost`, `mqttbrokerport`, `mqttbrokeruser` and `mqttbrokerpass`
 
-Yours MQTT address and credentials. If you are doesn't know what is this, go to this addon:
+Your MQTT Broker address and credentials. If you don't know what this is, install this addon:
 https://github.com/home-assistant/hassio-addons/tree/master/mosquitto
 
 ### Option: `loglevel`
