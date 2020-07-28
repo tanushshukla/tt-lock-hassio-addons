@@ -1,4 +1,4 @@
-# TTLockToMQTT Add-on
+# TTLock2MQTT Add-on
 
 Integrating your TTLock devices with Home Assistant over MQTT
 
