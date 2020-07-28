@@ -173,7 +173,7 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
     try:
         ttlockToMqttClient = TTLockToMqttClientLock(
             lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive)
-        logging.info("Created TTlock Mqtt Client for lockid: {}".format(
+        logging.info("Client {} TTlock Mqtt Created".format(
             ttlockToMqttClient.mqttClientId))
         bad_connection = 0
         ttlockToMqttClient.mqttConnection()
@@ -193,11 +193,11 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, k
             ttlockToMqttClient.disconnect()
 
     except Exception as e:
-        logging.exception("Client Loop Thread Error {}".format(
+        logging.exception("Client {} Loop Thread Error ".format(
             ttlockToMqttClient.mqttClientId))
 
     finally:
-        logging.debug("Return future for lockid: {}".format(
+        logging.debug("Return Client {} future".format(
             ttlockToMqttClient.mqttClientId))
         return ttlockToMqttClient
 
@@ -239,7 +239,7 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token):
         run_flag = False
         for lockId, future in client_futures.items():
             logging.info("{} thread is over!".format(
-                future.result().getLockId()))
+                future.result().mqttClientId()))
     except ValueError as e:
         logging.exception('Exiting script...')
 
@@ -279,7 +279,7 @@ if __name__ == '__main__':
         elif current_argument in ("-b", "--broker"):
             broker = current_value
         elif current_argument in ("-p", "--port"):
-            port = current_value
+            port = int(current_value)
         elif current_argument in ("-u", "--user"):
             broker_user = current_value
         elif current_argument in ("-P", "--Pass"):
