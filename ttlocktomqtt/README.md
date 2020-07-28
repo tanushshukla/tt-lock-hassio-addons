@@ -1,8 +1,7 @@
 # TTLock2MQTT
 > Integrating your TTLocks devices with Home Assistant over MQTT.
 
-![Project Stage][project-stage-shield]  
-![Maintenance][maintenance-shield]  
+![Project Stage][project-stage-shield]![Maintenance][maintenance-shield] 
 
 Enables adding your TTLock devices with Home Assistant over MQTT using [TTLock API][ttlockapi] and [G2 WiFi Gateway][g2_gateway]
 
