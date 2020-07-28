@@ -1,6 +1,6 @@
 # TTLockToMQTT Add-on
 
-Integrating yours ttlocks devices on your home assistan instance over MQTT.
+Integrating your TTLocks devices with Home Assistant over MQTT.
 
 1. Click install.
-1. and read the DOC for configuration.
+2. Read the [DOCS](./DOCS.md) for configuration.

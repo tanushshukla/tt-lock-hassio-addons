@@ -1,6 +1,6 @@
 # TTLockToMQTT Add-on
 
-Integrating yours ttlocks devices on your home assistan instance over MQTT.
+Integrating your TTLocks devices with Home Assistant over MQTT.
 
 ## Installation
 
@@ -23,7 +23,7 @@ mqttbrokerhost: 192.0.0.7
 mqttbrokerport: '1883'
 mqttbrokeruser: BROKER_USER
 mqttbrokerpass: BROKER_PASS
-loglevel: INFO
+loglevel: info
 ```
 ### Options: `ttlockclientapp` and `ttlocktoken`
 
