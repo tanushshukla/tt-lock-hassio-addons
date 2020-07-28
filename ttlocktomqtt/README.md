@@ -18,10 +18,12 @@ Enables adding your TTLock devices with Home Assistant over MQTT using [TTLock A
     * Work in progress
 
 ## Meta
-
+  
+Antonio Campos - [tonyldo][github_tonyldo] - tonyldo@gmail.com 
+  
 Distributed under the Apache-2.0 License. See ``LICENSE`` for more information.
 
-[https://github.com/tonyldo/tonyldo-hassio-addons](https://github.com/tonyldo/tonyldo-hassio-addons)
+
 
 
 <!-- Markdown link -->
@@ -30,3 +32,4 @@ Distributed under the Apache-2.0 License. See ``LICENSE`` for more information.
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2020.svg
 [ttlockapi]: https://open.ttlock.com/doc/userGuide
 [g2_gateway]: ./pictures/g2_gateway.jpeg
+[github_tonyldo]: https://github.com/tonyldo/
