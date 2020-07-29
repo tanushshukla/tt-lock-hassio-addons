@@ -1,8 +1,8 @@
 {
-  "name": "TTLockToMqtt",
+  "name": "TTLock2MQTT",
   "version": "0.1",
-  "slug": "ttlocktomqtt",
-  "description": "Adapter between ttlock cloud api and mqtt server",
+  "slug": "ttlock2mqtt",
+  "description": "Connection between TTLock devices with Home Assistant using MQTT",
   "arch": [
     "armhf",
     "armv7",
@@ -10,7 +10,7 @@
     "amd64",
     "i386"
   ],
-  "url": "https://github.com/tonyldo/TTLockToMQTT",
+  "url": "https://github.com/tonyldo/tonyldo-hassio-addons",
   "startup": "system",
   "boot": "auto",
   "options": {
