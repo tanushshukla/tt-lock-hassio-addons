@@ -8,16 +8,16 @@ import logging
 from ttlockwrapper import TTLock, TTlockAPIError, constants
 
 
-class TTLockToMqttClient(mqtt.Client):
+class TTLock2MQTTClient(mqtt.Client):
     def __init__(self, id, ttlock, broker, port, broker_user, broker_pass, keepalive):
         mqttClientId = "lOCK-{}-{}".format(str(id), str(int(time.time())))
         super().__init__(mqttClientId, False)
         self.ttlock = ttlock
         self.mqttClientId = mqttClientId
         self.connected_flag = False
-        self.on_connect = TTLockToMqttClient.cb_on_connect
-        self.on_disconnect = TTLockToMqttClient.cb_on_disconnect
-        self.on_message = TTLockToMqttClient.cb_on_message
+        self.on_connect = TTLock2MQTTClient.cb_on_connect
+        self.on_disconnect = TTLock2MQTTClient.cb_on_disconnect
+        self.on_message = TTLock2MQTTClient.cb_on_message
         self.lastPublishInfo = time.time()
         self.broker_host = broker
         self.broker_port = port
@@ -68,7 +68,7 @@ class TTLockToMqttClient(mqtt.Client):
             logging.exception('Client {} error on connect'.format(client.getLockId()))
 
 
-class TTLockToMqttClientLock(TTLockToMqttClient):
+class TTLock2MQTTClientLock(TTLock2MQTTClient):
 
     def __init__(self, lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive):
         self.lock = lock
@@ -171,7 +171,7 @@ class TTLockToMqttClientLock(TTLockToMqttClient):
 def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive, loop_delay=2.0, run_forever=False):
     ttlockToMqttClient = None
     try:
-        ttlockToMqttClient = TTLockToMqttClientLock(
+        ttlockToMqttClient = TTLock2MQTTClientLock(
             lock, gateway, ttlock, broker, port, broker_user, broker_pass, keepalive)
         logging.info("Client {} TTlock Mqtt Created".format(
             ttlockToMqttClient.mqttClientId))
