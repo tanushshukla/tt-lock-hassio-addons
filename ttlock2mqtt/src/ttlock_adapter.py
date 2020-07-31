@@ -130,7 +130,7 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
     def forcePublishInfos(self):
         try:
             logging.info(
-                'Client {} publish lock.'.format(self.mqttClientId))
+                'Client {} publish lock infos.'.format(self.mqttClientId))
             self.sendLockState()
             self.sendLockBatteryLevel()
         except Exception as error:
@@ -153,7 +153,7 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
             return
         lock_is = 'UNLOCKED' if state else 'LOCKED'
         msg = self.STATE_PAYLOAD.format(lock_is)
-        self.sendMensage(self.STATE_SENSOR_TOPIC, msg)
+        self.sendMensage(self.STATE_SENSOR_TOPIC, msg, True)
 
     def sendDiscoveryMsgs(self):
         logging.info(
