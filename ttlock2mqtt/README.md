@@ -4,10 +4,8 @@
 ![Project Stage][project-stage-shield]![Maintenance][maintenance-shield] 
 
 Enables adding your TTLock devices with Home Assistant over MQTT using [TTLock API][ttlockapi] and the `WiFi G2 Gateway`
-<img src="./pictures/g2gatewaywifi.jpg" width="30%" height="30%" />
-  
-  
-![](./pictures/ttlock_header.png)
+
+<img src="./pictures/diagram.png"/>
 
 ## Configuration
 
