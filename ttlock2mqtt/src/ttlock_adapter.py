@@ -159,13 +159,13 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
         logging.info(
             'Client {} sending discoveries msgs.'.format(self.mqttClientId))
         msg = self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD.format(self.getName(
-        ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac(), self.getGatewayId())
+        ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg, True)
         """msg = self.DISCOVERY_STATE_SENSOR_PAYLOAD.format(self.getName(
-        ), self.STATE_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac(), self.getGatewayId())
+        ), self.STATE_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_BINARY_SENSOR_TOPIC, msg, True)"""
         msg = self.DISCOVERY_LOCK_PAYLOAD.format(self.getName(), self.COMMAND_TOPIC, self.STATE_SENSOR_TOPIC, self.getLockId(
-        ), self.getLockId(), self.getMac(), self.getGatewayId())
+        ), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg, True)
 
 

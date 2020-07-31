@@ -5,7 +5,7 @@
 
 Enables adding your TTLock devices with Home Assistant over MQTT using [TTLock API][ttlockapi] and the `WiFi G2 Gateway`
 
-<img src="./pictures/diagram.png"/>
+<img src="https://raw.githubusercontent.com/tonyldo/tonyldo-hassio-addons/master/ttlock2mqtt/pictures/diagram.png"/>
 
 ## Configuration
 
