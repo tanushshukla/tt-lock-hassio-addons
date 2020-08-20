@@ -1,6 +1,6 @@
 {
   "name": "TTLock2MQTT",
-  "version": "0.1",
+  "version": "0.2",
   "slug": "ttlock2mqtt",
   "description": "Connection between TTLock devices with Home Assistant using MQTT",
   "arch": [
@@ -24,6 +24,8 @@
     "mqttbrokerport": "port?",
     "mqttbrokeruser": "str?",
     "mqttbrokerpass": "str?",
+    "publishstatedelay": "int?",
+    "publishbatterydelay": "int?",
     "loglevel": "list(debug|info|warning|error)?"
   }
 }
