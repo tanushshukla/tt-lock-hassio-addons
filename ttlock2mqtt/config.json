@@ -26,6 +26,6 @@
     "mqttbrokerpass": "str?",
     "publishstatedelay": "int?",
     "publishbatterydelay": "int?",
-    "loglevel": "list(debug|info|warning|error)?"
+    "loglevel": "list(DEBUG|INFO|WARNING|ERROR)?"
   }
 }
