@@ -23,6 +23,8 @@ mqttbrokerhost: 192.0.0.7
 mqttbrokerport: '1883'
 mqttbrokeruser: BROKER_USER
 mqttbrokerpass: BROKER_PASS
+publishbatterydelay: 300
+publishstatedelay: 60
 loglevel: info
 ```
 ### Options: `ttlockclientapp` and `ttlocktoken`
