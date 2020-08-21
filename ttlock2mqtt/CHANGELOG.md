@@ -4,14 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [0.1] - 2020-07-14
+## 0.1
 
 ### Added
 
 - Publish Battery and state.
 - Lock and unlock commands.
 
-## [0.2] - 2020-08-20
+## 0.2
 
 ### Added
 
