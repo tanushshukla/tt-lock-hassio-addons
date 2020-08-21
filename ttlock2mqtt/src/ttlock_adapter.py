@@ -137,7 +137,7 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
     def forcePublishStateInfo(self):
         try:
             logging.info(
-                'Client {} publish lock info.'.format(self.mqttClientId))
+                'Client {} publish lock state.'.format(self.mqttClientId))
             self.sendLockState()
         except Exception as error:
             logging.error('Client {} error: {}'.format(
@@ -284,13 +284,13 @@ if __name__ == '__main__':
     ttlock_client = None
     ttlock_token = None
     state_delay = DELAY_BETWEEN_LOCK_PUBLISH_INFOS
-    battery_delay = DELAY_BETWEEN_LOCK_PUBLISH_INFOS
+    battery_delay = DELAY_BETWEEN_LOCK_PUBLISH_INFOS*5
     loglevel = 'INFO'
     full_cmd_arguments = sys.argv
     argument_list = full_cmd_arguments[1:]
     short_options = 'b:p:u:P:c:t:l:S:B:'
     long_options = ['broker=', 'port=', 'user=',
-                    'Pass=', 'client=', 'token=', 'log_level=', 'State_delay','Battery_delay']
+                    'Pass=', 'client=', 'token=', 'log_level=', 'State_delay=','Battery_delay=']
     try:
         arguments, values = getopt.getopt(
             argument_list, short_options, long_options)
@@ -315,9 +315,9 @@ if __name__ == '__main__':
         elif current_argument in ("-l", "--log_level"):
             loglevel = current_value
         elif current_argument in ("-S", "--State_delay"):
-            state_delay = current_value
+            state_delay = int(current_value)
         elif current_argument in ("-B", "--Battery_delay"):
-            battery_delay = current_value
+            battery_delay = int(current_value)
 
     numeric_level = getattr(logging, loglevel.upper(), None)
     if not isinstance(numeric_level, int):
