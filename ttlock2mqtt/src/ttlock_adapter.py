@@ -326,6 +326,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=numeric_level, datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)-15s - [%(levelname)s] TTLOCK2MQTT: %(message)s', )
 
-    logging.info("Options: {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
+    logging.debug("Options: {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
         ttlock_client, ttlock_token, broker, port, broker_user,loglevel, broker_pass,state_delay,battery_delay))
     main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,state_delay,battery_delay)

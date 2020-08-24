@@ -15,7 +15,14 @@
   "boot": "auto",
   "options": {
     "ttlockclientapp": "TTLOCK CLOUD API CLIENT",
-    "ttlocktoken": "TTLOCK TOKEN"
+    "ttlocktoken": "TTLOCK TOKEN",
+    "mqttbrokerhost": "",
+    "mqttbrokerport": "",
+    "mqttbrokeruser": "",
+    "mqttbrokerpass": "",
+    "publishstatedelay": 60,
+    "publishbatterydelay": 300,
+    "loglevel": "INFO"
   },
   "schema": {
     "ttlockclientapp": "str",
