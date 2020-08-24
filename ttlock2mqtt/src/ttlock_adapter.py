@@ -299,9 +299,9 @@ if __name__ == '__main__':
 
     for current_argument, current_value in arguments:
         if isEmptyStr(current_value):
-            break
+            pass
         elif current_argument in ("-b", "--broker"):
-            broker = current_value
+            broker = current_value 
         elif current_argument in ("-p", "--port"):
             port = int(current_value)
         elif current_argument in ("-u", "--user"):
