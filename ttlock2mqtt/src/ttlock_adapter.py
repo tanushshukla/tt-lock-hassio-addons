@@ -77,14 +77,11 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
             self.getLockId())
         self.DISCOVERY_SENSOR_TOPIC = 'homeassistant/sensor/ttlock/{}_battery/config'.format(
             self.getLockId())
-        self.DISCOVERY_BINARY_SENSOR_TOPIC = 'homeassistant/binary_sensor/ttlock/{}_state/config'.format(
-            self.getLockId())
         self.BATTERY_LEVEL_SENSOR_TOPIC = 'ttlocktomqtt/{}/battery'.format(
             self.getLockId())
         self.COMMAND_TOPIC = 'ttlocktomqtt/{}/command'.format(self.getLockId())
         self.STATE_SENSOR_TOPIC = 'ttlocktomqtt/{}/state'.format(
             self.getLockId())
-        self.DISCOVERY_STATE_SENSOR_PAYLOAD = '{{"device_class": "lock", "name": "{} state", "state_topic": "{}", "value_template": "{{{{ value_json.state }}}}", "uniq_id":"{}_state","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{{{ value_json.state }}}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{{{ value_json.battery }}}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
         self.STATE_PAYLOAD = '{{"state": "{}"}}'
@@ -182,19 +179,14 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
         msg = self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD.format(self.getName(
         ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg, True)
-        """msg = self.DISCOVERY_STATE_SENSOR_PAYLOAD.format(self.getName(
-        ), self.STATE_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac())
-        self.sendMensage(self.DISCOVERY_BINARY_SENSOR_TOPIC, msg, True)"""
+
         msg = self.DISCOVERY_LOCK_PAYLOAD.format(self.getName(), self.COMMAND_TOPIC, self.STATE_SENSOR_TOPIC, self.getLockId(
         ), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg, True)
 
 
-def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, keepalive, loop_delay=2.0, run_forever=False):
-    ttlock2MqttClient = None
+def client_loop(ttlock2MqttClient, loop_delay=2.0, run_forever=False):
     try:
-        ttlock2MqttClient = TTLock2MQTTClientLock(
-            lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, keepalive)
         logging.info("Client {} TTlock Mqtt Created".format(
             ttlock2MqttClient.mqttClientId))
         bad_connection = 0
@@ -223,21 +215,25 @@ def client_loop(lock, gateway, ttlock, broker, port, broker_user, broker_pass, s
             ttlock2MqttClient.mqttClientId))
         return ttlock2MqttClient
 
+def create_futures(id,client):
+    if not client:
+        logging.debug('TTlock Element {} Client is empty...'.format(id))
+    elif id in client_futures.keys() and not client_futures.get(id).done():
+        logging.debug('TTlock Element {} Client already created...'.format(id))
+    else:
+        client_futures[id] = executor.submit(client_loop, client)
+    time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
 
 def createClients(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,state_delay,battery_delay):
     ttlock = TTLock(ttlock_client, ttlock_token)
+    ttlock2MqttClient = None
     for gateway in ttlock.get_gateway_generator():
+        create_futures(gateway.get(constants.GATEWAY_ID_FIELD),None)
         for lock in ttlock.get_locks_per_gateway_generator(gateway.get(constants.GATEWAY_ID_FIELD)):
-            if lock.get(constants.LOCK_ID_FIELD) in client_futures.keys() and not client_futures.get(lock.get(constants.LOCK_ID_FIELD)).done():
-                logging.debug('Lock {} Client already created...'.format(
-                    lock.get(constants.LOCK_ID_FIELD)))
-
-            else:
-                client_futures[lock.get(constants.LOCK_ID_FIELD)] = executor.submit(
-                    client_loop, lock, gateway, ttlock, broker, port, broker_user, broker_pass,state_delay, battery_delay, DELAY_BETWEEN_LOCK_PUBLISH_INFOS*2)
-            time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
-        time.sleep(DELAY_BETWEEN_NEW_THREADS_CREATION)
-
+            ttlock2MqttClient = TTLock2MQTTClientLock(
+                    lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, DELAY_BETWEEN_LOCK_PUBLISH_INFOS*2)
+            create_futures(lock.get(constants.LOCK_ID_FIELD),ttlock2MqttClient)
+        
 
 def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,state_delay,battery_delay):
     try:
@@ -259,7 +255,7 @@ def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,sta
         logging.info("Ending...")
         global run_flag
         run_flag = False
-        for lockId, future in client_futures.items():
+        for id, future in client_futures.items():
             logging.info("Client {} thread is over!".format(
                 future.result().mqttClientId))
     except ValueError as e:

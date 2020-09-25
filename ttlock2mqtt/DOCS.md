@@ -4,7 +4,7 @@ Integrating your TTLock devices with Home Assistant over MQTT
 
 ## Installation
 
-1. Follow the instructions on [README](./README.md) of this repo to add it in Supervisor Add-on Store.
+1. Follow the instructions on [README](../README.md) of this repo to add it in Supervisor Add-on Store.
 1. Search for the "TTLock2MQTT" add-on at the Supervisor Add-on store.
 1. Install the "TTLock2MQTT" add-on.
 1. Configure the "TTLock2MQTT" add-on.
