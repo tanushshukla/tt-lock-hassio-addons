@@ -23,6 +23,10 @@
   "schema": {
     "ttlockclientapp": "str",
     "ttlocktoken":"str",
+    "mqttbrokerhost": "str?",	
+    "mqttbrokerport": "port?",	
+    "mqttbrokeruser": "str?",	
+    "mqttbrokerpass": "str?",
     "publishstatedelay": "int?",
     "publishbatterydelay": "int?",
     "loglevel": "list(DEBUG|INFO|WARNING|ERROR)?"
