@@ -77,7 +77,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
         self.mqttClientId = "GATEWAY-{}-{}".format(str(self.getGatewayId()), str(int(time.time())))
         super().__init__(ttlock, broker, port, broker_user, broker_pass, keepalive)
 
-        self.DISCOVERY_GATEWAY_CONNECTION_TOPIC = 'homeassistant/binarysensor/ttlock/{}_gateway/config'.format(
+        self.DISCOVERY_GATEWAY_CONNECTION_TOPIC = 'homeassistant/binary_sensor/ttlock/{}_gateway/config'.format(
             self.getGatewayId())
         self.CONNECTION_BINARY_SENSOR_TOPIC = 'ttlocktomqtt/{}/connection'.format(
             self.getGatewayId())
