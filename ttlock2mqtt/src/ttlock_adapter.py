@@ -9,11 +9,10 @@ from ttlockwrapper import TTLock, TTlockAPIError, constants
 
 
 class TTLock2MQTTClient(mqtt.Client):
-    def __init__(self, id, ttlock, broker, port, broker_user, broker_pass, keepalive):
-        mqttClientId = "lOCK-{}-{}".format(str(id), str(int(time.time())))
-        super().__init__(mqttClientId, False)
+    def __init__(self, ttlock, broker, port, broker_user, broker_pass, keepalive):
+        super().__init__(self.mqttClientId, False)
         self.ttlock = ttlock
-        self.mqttClientId = mqttClientId
+
         self.connected_flag = False
         self.on_connect = TTLock2MQTTClient.cb_on_connect
         self.on_disconnect = TTLock2MQTTClient.cb_on_disconnect
@@ -23,6 +22,9 @@ class TTLock2MQTTClient(mqtt.Client):
         self.keepalive_mqtt = keepalive
         if broker_user and broker_pass:
             self.username_pw_set(broker_user, password=broker_pass)
+        logging.info("Client {} TTlock Mqtt Created".format(
+            self.mqttClientId))
+        self.COMMAND_TOPIC = None
 
     def sendMensage(self, topic, msg, retain=False):
         logging.debug('Client {} sending mensage "{}" to topic "{}" and retained {}'.format(
@@ -68,11 +70,83 @@ class TTLock2MQTTClient(mqtt.Client):
             logging.exception('Client {} error on connect'.format(client.mqttClientId))
 
 
+class TTLock2MQTTClientGateway(TTLock2MQTTClient):
+
+    def __init__(self, gateway, ttlock, broker, port, broker_user, broker_pass, rssi_delay, keepalive):
+        self.gateway = gateway
+        self.mqttClientId = "GATEWAY-{}-{}".format(str(self.getGatewayId()), str(int(time.time())))
+        super().__init__(ttlock, broker, port, broker_user, broker_pass, keepalive)
+
+        self.DISCOVERY_GATEWAY_CONNECTION_TOPIC = 'homeassistant/binarysensor/ttlock/{}_gateway/config'.format(
+            self.getGatewayId())
+        self.CONNECTION_BINARY_SENSOR_TOPIC = 'ttlocktomqtt/{}/connection'.format(
+            self.getGatewayId())
+        self.CONNECTION_BINARY_SENSOR_PAYLOAD = '{{"device_class": "connectivity", "name": "{} connection", "state_topic": "{}", "value_template": "{{{{ value_json.connection }}}}", "uniq_id":"{}_CONNECTION","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.CONNECTION_PAYLOAD = '{{"connection": {}}}'
+
+        self.lastConnectionPublishInfo = time.time()
+        self.rssi_delay = rssi_delay
+        
+
+    def getGatewayId(self):
+        return self.gateway.get(constants.GATEWAY_ID_FIELD)
+
+    def getMac(self):
+        return self.gateway.get(constants.GATEWAY_MAC_FIELD)
+
+    def getName(self):
+        return self.gateway.get('gatewayName')
+    
+    def updateGatewayJson(self):
+        try:
+            for gateway in self.ttlock.get_gateway_generator():
+                if gateway.get(constants.GATEWAY_ID_FIELD)==self.getGatewayId():
+                    self.gateway = gateway
+                    return
+        except Exception as error:
+            logging.error('Client {} error while update Gateway Json: {}'.format(
+                self.mqttClientId, str(error)))
+
+    def publishInfos(self):
+        if time.time()-self.lastConnectionPublishInfo > self.rssi_delay:
+            self.updateGatewayJson()
+            self.forcePublishConnectionInfo()
+
+    def forcePublishConnectionInfo(self):
+        try:
+            logging.info(
+                'Client {} publish connection info.'.format(self.mqttClientId))
+            self.sendGatewayConnectionLevel()
+        except Exception as error:
+            logging.error('Client {} error: {}'.format(
+                self.mqttClientId, str(error)))
+        finally:
+            self.lastConnectionPublishInfo = time.time()
+    
+    def forcePublishInfos(self):
+        self.forcePublishConnectionInfo()
+
+    def sendGatewayConnectionLevel(self):
+        connectionState = 'on' if self.gateway.get('isOnline') else 'off'
+        msg = self.CONNECTION_PAYLOAD.format(connectionState)
+        self.sendMensage(self.CONNECTION_BINARY_SENSOR_TOPIC, msg)
+
+    def sendDiscoveryMsgs(self):
+        logging.info(
+            'Client {} sending discoveries msgs.'.format(self.mqttClientId))
+        msg = self.CONNECTION_BINARY_SENSOR_PAYLOAD.format(self.getName(
+        ), self.CONNECTION_BINARY_SENSOR_TOPIC, self.getGatewayId(), self.getGatewayId(), self.getMac())
+        self.sendMensage(self.DISCOVERY_GATEWAY_CONNECTION_TOPIC, msg, True)
+
+
 class TTLock2MQTTClientLock(TTLock2MQTTClient):
 
     def __init__(self, lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, keepalive):
         self.lock = lock
         self.gateway = gateway
+        self.mqttClientId = "LOCK-{}-{}".format(str(self.getLockId()), str(int(time.time())))
+        super().__init__(ttlock, broker, port, broker_user, broker_pass, keepalive)
+
         self.DISCOVERY_LOCK_TOPIC = 'homeassistant/lock/ttlock/{}_lock/config'.format(
             self.getLockId())
         self.DISCOVERY_SENSOR_TOPIC = 'homeassistant/sensor/ttlock/{}_battery/config'.format(
@@ -91,9 +165,6 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
         self.lastBatteryPublishInfo = time.time()
         self.state_delay = state_delay
         self.battery_delay = battery_delay
-        
-        super().__init__(self.getLockId(), ttlock, broker,
-                         port, broker_user, broker_pass, keepalive)
 
     def getName(self):
         return self.lock.get(constants.LOCK_ALIAS_FIELD)
@@ -187,7 +258,7 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
 
 def client_loop(ttlock2MqttClient, loop_delay=2.0, run_forever=False):
     try:
-        logging.info("Client {} TTlock Mqtt Created".format(
+        logging.info("Client {} TTlock Mqtt on client_loop".format(
             ttlock2MqttClient.mqttClientId))
         bad_connection = 0
         ttlock2MqttClient.mqttConnection()
@@ -228,7 +299,8 @@ def createClients(broker, port, broker_user, broker_pass, ttlock_client, ttlock_
     ttlock = TTLock(ttlock_client, ttlock_token)
     ttlock2MqttClient = None
     for gateway in ttlock.get_gateway_generator():
-        create_futures(gateway.get(constants.GATEWAY_ID_FIELD),None)
+        ttlock2MqttClient = TTLock2MQTTClientGateway(gateway, ttlock, broker, port, broker_user, broker_pass, battery_delay, DELAY_BETWEEN_LOCK_PUBLISH_INFOS*2)
+        create_futures(gateway.get(constants.GATEWAY_ID_FIELD),ttlock2MqttClient)
         for lock in ttlock.get_locks_per_gateway_generator(gateway.get(constants.GATEWAY_ID_FIELD)):
             ttlock2MqttClient = TTLock2MQTTClientLock(
                     lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, DELAY_BETWEEN_LOCK_PUBLISH_INFOS*2)
