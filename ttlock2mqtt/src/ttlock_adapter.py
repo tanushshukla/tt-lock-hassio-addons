@@ -72,7 +72,7 @@ class TTLock2MQTTClient(mqtt.Client):
 
 class TTLock2MQTTClientGateway(TTLock2MQTTClient):
 
-    def __init__(self, gateway, ttlock, broker, port, broker_user, broker_pass, rssi_delay, keepalive):
+    def __init__(self, gateway, ttlock, broker, port, broker_user, broker_pass, connection_info_delay, keepalive):
         self.gateway = gateway
         self.mqttClientId = "GATEWAY-{}-{}".format(str(self.getGatewayId()), str(int(time.time())))
         super().__init__(ttlock, broker, port, broker_user, broker_pass, keepalive)
@@ -81,11 +81,11 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
             self.getGatewayId())
         self.CONNECTION_BINARY_SENSOR_TOPIC = 'ttlocktomqtt/{}/connection'.format(
             self.getGatewayId())
-        self.CONNECTION_BINARY_SENSOR_PAYLOAD = '{{"device_class": "connectivity", "name": "{} connection", "state_topic": "{}", "value_template": "{{{{ value_json.connection }}}}", "uniq_id":"{}_CONNECTION","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
-        self.CONNECTION_PAYLOAD = '{{"connection": {}}}'
+        self.CONNECTION_BINARY_SENSOR_PAYLOAD = '{{"device_class": "connectivity", "name": "{} connection", "state_topic": "{}", "value_template": "{{{{ value_json.connection }}}}", "uniq_id":"{}_CONNECTION","device":{{"identifiers":["{}"], "name": "TTLOCK_GATEWAY_{}", "connections":[["mac","{}"]]}} }}'
+        self.CONNECTION_PAYLOAD = '{{"connection": "{}"}}'
 
         self.lastConnectionPublishInfo = time.time()
-        self.rssi_delay = rssi_delay
+        self.connection_info_delay = connection_info_delay
         
 
     def getGatewayId(self):
@@ -108,7 +108,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
                 self.mqttClientId, str(error)))
 
     def publishInfos(self):
-        if time.time()-self.lastConnectionPublishInfo > self.rssi_delay:
+        if time.time()-self.lastConnectionPublishInfo > self.connection_info_delay:
             self.updateGatewayJson()
             self.forcePublishConnectionInfo()
 
@@ -127,7 +127,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
         self.forcePublishConnectionInfo()
 
     def sendGatewayConnectionLevel(self):
-        connectionState = 'on' if self.gateway.get('isOnline') else 'off'
+        connectionState = 'ON' if self.gateway.get('isOnline') else 'OFF'
         msg = self.CONNECTION_PAYLOAD.format(connectionState)
         self.sendMensage(self.CONNECTION_BINARY_SENSOR_TOPIC, msg)
 
@@ -135,7 +135,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
         logging.info(
             'Client {} sending discoveries msgs.'.format(self.mqttClientId))
         msg = self.CONNECTION_BINARY_SENSOR_PAYLOAD.format(self.getName(
-        ), self.CONNECTION_BINARY_SENSOR_TOPIC, self.getGatewayId(), self.getGatewayId(), self.getMac())
+        ), self.CONNECTION_BINARY_SENSOR_TOPIC, self.getGatewayId(), self.getGatewayId(), self.getGatewayId(), self.getMac())
         self.sendMensage(self.DISCOVERY_GATEWAY_CONNECTION_TOPIC, msg, True)
 
 
@@ -156,8 +156,8 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
         self.COMMAND_TOPIC = 'ttlocktomqtt/{}/command'.format(self.getLockId())
         self.STATE_SENSOR_TOPIC = 'ttlocktomqtt/{}/state'.format(
             self.getLockId())
-        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{{{ value_json.state }}}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
-        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{{{ value_json.battery }}}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"],"connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_LOCK_PAYLOAD = '{{"name": "{} lock", "command_topic": "{}", "state_topic": "{}", "value_template": "{{{{ value_json.state }}}}", "uniq_id":"{}_lock","device":{{"identifiers":["{}"], "name": "TTLOCK_LOCK_{}", "connections":[["mac","{}"]]}} }}'
+        self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD = '{{"device_class": "battery", "name": "{} battery", "state_topic": "{}", "unit_of_measurement": "%", "value_template": "{{{{ value_json.battery }}}}", "uniq_id":"{}_battery","device":{{"identifiers":["{}"], "name": "TTLOCK_LOCK_{}", "connections":[["mac","{}"]]}} }}'
         self.STATE_PAYLOAD = '{{"state": "{}"}}'
         self.BATTERY_LEVEL_PAYLOAD = '{{"battery": {}}}'
 
@@ -248,11 +248,11 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
         logging.info(
             'Client {} sending discoveries msgs.'.format(self.mqttClientId))
         msg = self.DISCOVERY_BATTERY_LEVEL_SENSOR_PAYLOAD.format(self.getName(
-        ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getMac())
+        ), self.BATTERY_LEVEL_SENSOR_TOPIC, self.getLockId(), self.getLockId(), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_SENSOR_TOPIC, msg, True)
 
         msg = self.DISCOVERY_LOCK_PAYLOAD.format(self.getName(), self.COMMAND_TOPIC, self.STATE_SENSOR_TOPIC, self.getLockId(
-        ), self.getLockId(), self.getMac())
+        ), self.getLockId(), self.getLockId(), self.getMac())
         self.sendMensage(self.DISCOVERY_LOCK_TOPIC, msg, True)
 
 
