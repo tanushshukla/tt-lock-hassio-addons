@@ -26,6 +26,7 @@ mqttbrokerpass: BROKER_PASS
 publishbatterydelay: 300
 publishstatedelay: 60
 loglevel: info
+maxthreads: 200
 ```
 ### Options: `ttlockclientapp` and `ttlocktoken`
 
@@ -43,3 +44,11 @@ https://github.com/home-assistant/hassio-addons/tree/master/mosquitto
 - `info`: Default informations.
 - `warning`: Little alerts.
 - `error`:  Only errors.
+
+### Option: `publishbatterydelay` and `publishbatterydelay`
+
+Time between two information publish.
+
+### Option: `maxthreads`
+
+Max number of threads for execution and the default number is 200. If you have more than 200 locks and gateway try two increase this number.
