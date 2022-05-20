@@ -1,9 +1,9 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
-# Build arugments
 ARG BUILD_DATE
 ARG BUILD_REF
 ARG BUILD_VERSION
@@ -21,19 +21,18 @@ LABEL \
     org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.name="TTLock2MQTT" \
     org.label-schema.schema-version="0.1" \
-    org.label-schema.url="https://github.com/tonyldo/tonyldo-hassio-addons" \
-    org.label-schema.usage="https://github.com/tonyldo/tonyldo-hassio-addons/blob/master/ttlock2mqtt/README.md" \
+    org.label-schema.url="https://github.com/leofig-rj/tonyldo-hassio-addons" \
+    org.label-schema.usage="https://github.com/leofig-rj/tonyldo-hassio-addons/blob/master/ttlock2mqtt/README.md" \
     org.label-schema.vcs-ref=${BUILD_REF} \
-    org.label-schema.vcs-url="https://github.com/tonyldo/tonyldo-hassio-addons" \
+    org.label-schema.vcs-url="https://github.com/leofig-rj/tonyldo-hassio-addons" \
     org.label-schema.vendor=" Hass.io Add-on"
 
+# Copy root filesystem
+COPY rootfs /
 
-COPY requirements.txt /tmp/
+# Install requirements
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY src/ttlock_adapter.py /
-
-COPY run.sh /
-RUN chmod a+x /run.sh
-
-CMD [ "/run.sh" ]
+# Set execution permissions
+RUN chmod a+x /etc/services.d/ttlock2mqtt/run
+RUN chmod a+x /etc/services.d/ttlock2mqtt/finish

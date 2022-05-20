@@ -91,7 +91,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
 
         self.lastConnectionPublishInfo = time.time()
         self.connection_info_delay = connection_info_delay
-        
+
 
     def getGatewayId(self):
         return self.gateway.get(constants.GATEWAY_ID_FIELD)
@@ -101,7 +101,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
 
     def getName(self):
         return self.gateway.get('gatewayName')
-    
+
     def updateGatewayJson(self):
         try:
             for gateway in self.ttlock.get_gateway_generator():
@@ -127,7 +127,7 @@ class TTLock2MQTTClientGateway(TTLock2MQTTClient):
                 self.mqttClientId, str(error)))
         finally:
             self.lastConnectionPublishInfo = time.time()
-    
+
     def forcePublishInfos(self):
         self.forcePublishConnectionInfo()
 
@@ -228,7 +228,7 @@ class TTLock2MQTTClientLock(TTLock2MQTTClient):
                 self.mqttClientId, str(error)))
         finally:
             self.lastBatteryPublishInfo = time.time()
-    
+
     def forcePublishInfos(self):
         self.forcePublishStateInfo()
         self.forcePublishBatteryInfo()
@@ -310,7 +310,7 @@ def createClients(broker, port, broker_user, broker_pass, ttlock_client, ttlock_
             ttlock2MqttClient = TTLock2MQTTClientLock(
                     lock, gateway, ttlock, broker, port, broker_user, broker_pass, state_delay, battery_delay, DELAY_BETWEEN_LOCK_PUBLISH_INFOS*2)
             create_futures(lock.get(constants.LOCK_ID_FIELD),ttlock2MqttClient)
-        
+
 
 def main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,state_delay,battery_delay,max_threads):
     try:
@@ -372,7 +372,7 @@ if __name__ == '__main__':
         if isEmptyStr(current_value):
             pass
         elif current_argument in ("-b", "--broker"):
-            broker = current_value 
+            broker = current_value
         elif current_argument in ("-p", "--port"):
             port = int(current_value)
         elif current_argument in ("-u", "--user"):
@@ -398,7 +398,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=numeric_level, datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)-15s - [%(levelname)s] TTLOCK2MQTT: %(message)s', )
-    
+
     logging.debug("Options: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
-        ttlock_client, ttlock_token, broker, port, broker_user,loglevel, broker_pass,state_delay,battery_delay,max_threads))
-    main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token,state_delay,battery_delay,max_threads)
+        ttlock_client, ttlock_token, broker, port, broker_user, broker_pass, loglevel, state_delay, battery_delay, max_threads))
+    main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token, state_delay ,battery_delay, max_threads)

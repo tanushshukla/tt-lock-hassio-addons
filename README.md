@@ -11,5 +11,9 @@ Add the follow url to your Supervisor Add-on Store by click at the three vertica
 https://github.com/tonyldo/tonyldo-hassio-addons
 ```
 
+## More information
+
+[README](https://github.com/tonyldo/tonyldo-hassio-addons/blob/master/ttlock2mqtt/README.md).
+
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-development%20beta-red.svg
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2020.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2022.svg
