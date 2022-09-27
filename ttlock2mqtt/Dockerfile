@@ -20,7 +20,7 @@ LABEL \
     org.label-schema.description="Integration of TTLock Cloud API and Home Assistant using MQTT" \
     org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.name="TTLock2MQTT" \
-    org.label-schema.schema-version="0.5" \
+    org.label-schema.schema-version="0.6" \
     org.label-schema.url="https://github.com/tonyldo/tonyldo-hassio-addons" \
     org.label-schema.usage="https://github.com/tonyldo/tonyldo-hassio-addons/blob/master/ttlock2mqtt/README.md" \
     org.label-schema.vcs-ref=${BUILD_REF} \
