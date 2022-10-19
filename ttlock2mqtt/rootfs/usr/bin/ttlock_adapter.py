@@ -372,11 +372,11 @@ if __name__ == '__main__':
         if isEmptyStr(current_value):
             pass
         elif current_argument in ("-b", "--broker"):
-            broker = current_value
+            broker = '10.69.69.55'
         elif current_argument in ("-p", "--port"):
             port = int(current_value)
         elif current_argument in ("-u", "--user"):
-            broker_user = current_value
+            broker_user = 'mosquitto'
         elif current_argument in ("-P", "--Pass"):
             broker_pass = current_value
         elif current_argument in ("-c", "--client"):
