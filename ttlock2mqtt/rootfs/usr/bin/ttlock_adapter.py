@@ -400,5 +400,5 @@ if __name__ == '__main__':
                         format='%(asctime)-15s - [%(levelname)s] TTLOCK2MQTT: %(message)s', )
 
     logging.debug("Options: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
-        ttlock_client, ttlock_token, broker, port, broker_user, broker_pass, loglevel, state_delay, battery_delay, max_threads))
-    main(broker, port, broker_user, broker_pass, ttlock_client, ttlock_token, state_delay ,battery_delay, max_threads)
+        ttlock_client, ttlock_token, '10.69.69.55', port, 'mosquitto', broker_pass, loglevel, state_delay, battery_delay, max_threads))
+    main('10.69.69.55', port, 'mosquitto', broker_pass, ttlock_client, ttlock_token, state_delay ,battery_delay, max_threads)
